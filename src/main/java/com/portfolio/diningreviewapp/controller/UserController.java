@@ -23,7 +23,7 @@ public class UserController {
         try {
             User createdUser = service.createUser(dto);
             UserDto response = convertToDto(createdUser);
-            return ResponseEntity.created(URI.create("/api/user" + response.getDisplayName())).body(response);
+            return ResponseEntity.created(URI.create("/api/user/" + response.getDisplayName())).body(response);
         } catch (ResponseStatusException e) {
             UserDto errorDto = new UserDto();
             errorDto.setMsg(e.getMessage());
