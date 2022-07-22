@@ -48,6 +48,7 @@ public class UserServiceTest {
         user.setIsEgg(false);
         user.setIsDairy(true);
 
+        Mockito.when(repository.findByDisplayName(userDto.getDisplayName())).thenReturn(Optional.empty());
         Mockito.when(repository.save(user)).thenReturn(user);
         User createdUser = service.createUser(userDto);
 
@@ -56,6 +57,11 @@ public class UserServiceTest {
         Assertions.assertNotNull(createdUser);
         Assertions.assertEquals(user.getDisplayName(), createdUser.getDisplayName());
         Assertions.assertEquals(user.getZipcode(), createdUser.getZipcode());
+        Assertions.assertEquals(user.getCity(), createdUser.getCity());
+        Assertions.assertEquals(user.getState(), createdUser.getState());
+        Assertions.assertEquals(user.getIsPeanut(), createdUser.getIsPeanut());
+        Assertions.assertEquals(user.getIsEgg(), createdUser.getIsEgg());
+        Assertions.assertEquals(user.getIsDairy(), createdUser.getIsDairy());
     }
 
     @Test
@@ -87,6 +93,82 @@ public class UserServiceTest {
     }
 
     @Test
+    void convertToUser_success_hyphenZip() {
+
+        String displayName = "Ethan";
+        String city = "Plymouth";
+        String state = "Michigan";
+        String zipcode = "48170-1234";
+
+        UserDto dto = new UserDto();
+        dto.setDisplayName(displayName);
+        dto.setCity(city);
+        dto.setState(state);
+        dto.setZipcode(zipcode);
+
+        User user = new User();
+        user.setDisplayName(displayName);
+        user.setCity(city);
+        user.setState(state);
+        user.setZipcode(zipcode);
+        user.setIsPeanut(false);
+        user.setIsEgg(false);
+        user.setIsDairy(false);
+
+        Mockito.when(repository.findByDisplayName(dto.getDisplayName())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(user)).thenReturn(user);
+        User createdUser = service.createUser(dto);
+
+        Mockito.verify(repository, times(1)).save(user);
+
+        Assertions.assertNotNull(createdUser);
+        Assertions.assertEquals(user.getDisplayName(), createdUser.getDisplayName());
+        Assertions.assertEquals(user.getZipcode(), createdUser.getZipcode());
+        Assertions.assertEquals(user.getCity(), createdUser.getCity());
+        Assertions.assertEquals(user.getState(), createdUser.getState());
+        Assertions.assertEquals(user.getIsPeanut(), createdUser.getIsPeanut());
+        Assertions.assertEquals(user.getIsEgg(), createdUser.getIsEgg());
+        Assertions.assertEquals(user.getIsDairy(), createdUser.getIsDairy());
+    }
+
+    @Test
+    void convertToUser_zipcodeDoesNotMatch_setToNull() {
+
+        String displayName = "Ethan";
+        String state = "Michigan";
+        String zipcode = "4817";
+
+        UserDto dto = new UserDto();
+        dto.setDisplayName(displayName);
+        dto.setState(state);
+        dto.setZipcode(zipcode);
+
+        User user = new User();
+        user.setDisplayName(displayName);
+        user.setCity(null);
+        user.setState(state);
+        user.setZipcode(null);
+        user.setIsPeanut(false);
+        user.setIsEgg(false);
+        user.setIsDairy(false);
+
+        Mockito.when(repository.findByDisplayName(dto.getDisplayName())).thenReturn(Optional.empty());
+        Mockito.when(repository.save(user)).thenReturn(user);
+        User createdUser = service.createUser(dto);
+
+        Mockito.verify(repository, times(1)).save(user);
+
+        Assertions.assertNotNull(createdUser);
+        Assertions.assertEquals(user.getDisplayName(), createdUser.getDisplayName());
+        Assertions.assertEquals(user.getZipcode(), createdUser.getZipcode());
+        Assertions.assertEquals(user.getCity(), createdUser.getCity());
+        Assertions.assertEquals(user.getState(), createdUser.getState());
+        Assertions.assertEquals(user.getIsPeanut(), createdUser.getIsPeanut());
+        Assertions.assertEquals(user.getIsEgg(), createdUser.getIsEgg());
+        Assertions.assertEquals(user.getIsDairy(), createdUser.getIsDairy());
+    }
+
+    @Test
     void updateUser_success() {
 
         String displayName = "Ethan";
@@ -102,17 +184,12 @@ public class UserServiceTest {
 
         Mockito.when(repository.findByDisplayName(displayName)).thenReturn(Optional.of(userFromBackend));
 
-        User userWithUpdates = new User();
-        userWithUpdates.setDisplayName(displayName);
-        userWithUpdates.setCity(null);
-        userWithUpdates.setState(null);
-        userWithUpdates.setZipcode(null);
-        userWithUpdates.setIsPeanut(null);
-        userWithUpdates.setIsEgg(null);
-        userWithUpdates.setIsDairy(false);  // Updated property.
+        UserDto dto = new UserDto();
+        dto.setDisplayName(displayName);
+        dto.setIsDairy(false);
 
         Mockito.when(repository.save(any())).thenReturn(any());
-        User updatedUser = service.updateUser(userWithUpdates);
+        User updatedUser = service.updateUser(dto);
 
         Assertions.assertEquals(displayName, updatedUser.getDisplayName());
         Assertions.assertEquals(userFromBackend.getCity(), updatedUser.getCity());
@@ -121,7 +198,7 @@ public class UserServiceTest {
         Assertions.assertEquals(userFromBackend.getIsPeanut(), updatedUser.getIsPeanut());
         Assertions.assertEquals(userFromBackend.getIsEgg(), updatedUser.getIsEgg());
 
-        Assertions.assertEquals(userWithUpdates.getIsDairy(), updatedUser.getIsDairy());
+        Assertions.assertEquals(dto.getIsDairy(), updatedUser.getIsDairy());
     }
 
     @Test
@@ -129,18 +206,12 @@ public class UserServiceTest {
 
         String displayName = "Ethan";
 
-        User user = new User();
-        user.setDisplayName(displayName);
-        user.setCity("Plymouth");
-        user.setState("Michigan");
-        user.setZipcode("48170");
-        user.setIsPeanut(false);
-        user.setIsEgg(false);
-        user.setIsDairy(true);
+        UserDto dto = new UserDto();
+        dto.setDisplayName(displayName);
 
         Mockito.when(repository.findByDisplayName(displayName)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(ResponseStatusException.class, () -> service.updateUser(user));
+        Assertions.assertThrows(ResponseStatusException.class, () -> service.updateUser(dto));
     }
 
     @Test

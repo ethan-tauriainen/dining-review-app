@@ -28,12 +28,13 @@ public class UserService {
         }
 
         User user = this.convertToUser(userDto);
-        return repository.save(user);
+        repository.save(user);
+        return user;
     }
 
-    public User updateUser(User user) {
+    public User updateUser(UserDto userDto) {
 
-        Optional<User> userOptional = this.repository.findByDisplayName(user.getDisplayName());
+        Optional<User> userOptional = this.repository.findByDisplayName(userDto.getDisplayName());
 
         if (userOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist.");
@@ -41,28 +42,28 @@ public class UserService {
 
         User userToUpdate = userOptional.get();
 
-        if (user.getCity() != null) {
-            userToUpdate.setCity(user.getCity());
+        if (userDto.getCity() != null) {
+            userToUpdate.setCity(userDto.getCity());
         }
 
-        if (user.getState() != null) {
-            userToUpdate.setState(user.getState());
+        if (userDto.getState() != null) {
+            userToUpdate.setState(userDto.getState());
         }
 
-        if (user.getZipcode() != null) {
-            userToUpdate.setZipcode(user.getZipcode());
+        if (userDto.getZipcode() != null) {
+            userToUpdate.setZipcode(userDto.getZipcode());
         }
 
-        if (user.getIsPeanut() != null) {
-            userToUpdate.setIsPeanut(user.getIsPeanut());
+        if (userDto.getIsPeanut() != null) {
+            userToUpdate.setIsPeanut(userDto.getIsPeanut());
         }
 
-        if (user.getIsEgg() != null) {
-            userToUpdate.setIsEgg(user.getIsEgg());
+        if (userDto.getIsEgg() != null) {
+            userToUpdate.setIsEgg(userDto.getIsEgg());
         }
 
-        if (user.getIsDairy() != null) {
-            userToUpdate.setIsDairy(user.getIsDairy());
+        if (userDto.getIsDairy() != null) {
+            userToUpdate.setIsDairy(userDto.getIsDairy());
         }
 
         this.repository.save(userToUpdate);
@@ -82,7 +83,7 @@ public class UserService {
         user.setCity(dto.getCity());
         user.setState(dto.getState());
 
-        // validate zipcode
+        // Validate zipcode
         String zipcode = dto.getZipcode();
         Pattern pattern = Pattern.compile("\\b\\d{5}\\b");
         Matcher matcher = pattern.matcher(zipcode);
@@ -94,9 +95,15 @@ public class UserService {
             user.setZipcode(zipcode);
         }
 
-        user.setIsPeanut(dto.getIsPeanut());
-        user.setIsEgg(dto.getIsEgg());
-        user.setIsDairy(dto.getIsDairy());
+        // If the value is null from the DTO, then set it to false
+        boolean isPeanut = dto.getIsPeanut() != null && dto.getIsPeanut();
+        user.setIsPeanut(isPeanut);
+
+        boolean isEgg = dto.getIsEgg() != null && dto.getIsEgg();
+        user.setIsEgg(isEgg);
+
+        boolean isDairy = dto.getIsDairy() != null && dto.getIsDairy();
+        user.setIsDairy(isDairy);
 
         return user;
     }

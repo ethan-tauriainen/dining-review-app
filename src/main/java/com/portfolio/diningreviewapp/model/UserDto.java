@@ -1,5 +1,6 @@
 package com.portfolio.diningreviewapp.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
     @JsonProperty("displayName")
@@ -24,4 +26,7 @@ public class UserDto {
     private Boolean isEgg;
     @JsonProperty("isDairy")
     private Boolean isDairy;
+
+    @JsonProperty("error")
+    private String msg;
 }
