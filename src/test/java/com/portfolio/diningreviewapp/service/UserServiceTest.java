@@ -5,6 +5,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
+import com.portfolio.diningreviewapp.model.UserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,15 @@ public class UserServiceTest {
     @Test
     void createUser_success() {
 
+        UserDto userDto = new UserDto();
+        userDto.setDisplayName("Ethan");
+        userDto.setCity("Plymouth");
+        userDto.setState("Michigan");
+        userDto.setZipcode("48170");
+        userDto.setIsPeanut(false);
+        userDto.setIsEgg(false);
+        userDto.setIsDairy(true);
+
         User user = new User();
         user.setDisplayName("Ethan");
         user.setCity("Plymouth");
@@ -39,18 +49,28 @@ public class UserServiceTest {
         user.setIsDairy(true);
 
         Mockito.when(repository.save(user)).thenReturn(user);
-        User createdUser = service.createUser(user);
+        User createdUser = service.createUser(userDto);
 
         Mockito.verify(repository, times(1)).save(user);
 
-        Assertions.assertNotNull(createdUser, "The user was created.");
+        Assertions.assertNotNull(createdUser);
         Assertions.assertEquals(user.getDisplayName(), createdUser.getDisplayName());
+        Assertions.assertEquals(user.getZipcode(), createdUser.getZipcode());
     }
 
     @Test
     void createUser_userExists_failure() {
 
         String displayName = "Ethan";
+
+        UserDto userDto = new UserDto();
+        userDto.setDisplayName(displayName);
+        userDto.setCity("Plymouth");
+        userDto.setState("Michigan");
+        userDto.setZipcode("48170");
+        userDto.setIsPeanut(false);
+        userDto.setIsEgg(false);
+        userDto.setIsDairy(true);
 
         User user = new User();
         user.setDisplayName(displayName);
@@ -63,7 +83,7 @@ public class UserServiceTest {
 
         Mockito.when(repository.findByDisplayName(displayName)).thenReturn(Optional.of(user));
 
-        Assertions.assertThrows(ResponseStatusException.class, () -> service.createUser(user));
+        Assertions.assertThrows(ResponseStatusException.class, () -> service.createUser(userDto));
     }
 
     @Test

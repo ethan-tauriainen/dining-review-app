@@ -8,9 +8,9 @@ import javax.persistence.Table;
 
 import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "TB_USERS")
-@Data
 public class User {
 
     @Id

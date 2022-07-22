@@ -1,8 +1,11 @@
 package com.portfolio.diningreviewapp.service;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.portfolio.diningreviewapp.model.User;
+import com.portfolio.diningreviewapp.model.UserDto;
 import com.portfolio.diningreviewapp.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,14 +19,15 @@ public class UserService {
     
     private final UserRepository repository;
 
-    public User createUser(User user) {
+    public User createUser(UserDto userDto) {
 
-        User userFromBackend = this.getUser(user.getDisplayName());
+        User userFromBackend = this.getUser(userDto.getDisplayName());
 
         if (userFromBackend != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists.");
         }
 
+        User user = this.convertToUser(userDto);
         return repository.save(user);
     }
 
@@ -69,5 +73,31 @@ public class UserService {
 
         Optional<User> userOptional = repository.findByDisplayName(displayName);
         return userOptional.orElse(null);
+    }
+
+    private User convertToUser(UserDto dto) {
+
+        User user = new User();
+        user.setDisplayName(dto.getDisplayName());
+        user.setCity(dto.getCity());
+        user.setState(dto.getState());
+
+        // validate zipcode
+        String zipcode = dto.getZipcode();
+        Pattern pattern = Pattern.compile("\\b\\d{5}\\b");
+        Matcher matcher = pattern.matcher(zipcode);
+
+        Pattern pattern1 = Pattern.compile("\\b\\d{5}-\\d{4}\\b");
+        Matcher matcher1 = pattern1.matcher(zipcode);
+
+        if (matcher.matches() || matcher1.matches()) {
+            user.setZipcode(zipcode);
+        }
+
+        user.setIsPeanut(dto.getIsPeanut());
+        user.setIsEgg(dto.getIsEgg());
+        user.setIsDairy(dto.getIsDairy());
+
+        return user;
     }
 }
