@@ -189,7 +189,7 @@ public class UserServiceTest {
         dto.setIsDairy(false);
 
         Mockito.when(repository.save(any())).thenReturn(any());
-        User updatedUser = service.updateUser(dto);
+        User updatedUser = service.updateUser(dto, displayName);
 
         Assertions.assertEquals(displayName, updatedUser.getDisplayName());
         Assertions.assertEquals(userFromBackend.getCity(), updatedUser.getCity());
@@ -211,7 +211,7 @@ public class UserServiceTest {
 
         Mockito.when(repository.findByDisplayName(displayName)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(ResponseStatusException.class, () -> service.updateUser(dto));
+        Assertions.assertThrows(ResponseStatusException.class, () -> service.updateUser(dto, displayName));
     }
 
     @Test

@@ -28,13 +28,13 @@ public class UserService {
         }
 
         User user = this.convertToUser(userDto);
-        repository.save(user);
+        this.repository.save(user);
         return user;
     }
 
-    public User updateUser(UserDto userDto) {
+    public User updateUser(UserDto userDto, String displayName) {
 
-        Optional<User> userOptional = this.repository.findByDisplayName(userDto.getDisplayName());
+        Optional<User> userOptional = this.repository.findByDisplayName(displayName);
 
         if (userOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not exist.");
@@ -42,16 +42,17 @@ public class UserService {
 
         User userToUpdate = userOptional.get();
 
-        if (userDto.getCity() != null) {
+        if (userDto.getCity() != null && !userDto.getCity().isEmpty()) {
             userToUpdate.setCity(userDto.getCity());
         }
 
-        if (userDto.getState() != null) {
+        if (userDto.getState() != null && !userDto.getState().isEmpty()) {
             userToUpdate.setState(userDto.getState());
         }
 
-        if (userDto.getZipcode() != null) {
-            userToUpdate.setZipcode(userDto.getZipcode());
+        if (userDto.getZipcode() != null && !userDto.getZipcode().isEmpty()) {
+            String zipcode = validateZipcode(userDto.getZipcode());
+            userToUpdate.setZipcode(zipcode);
         }
 
         if (userDto.getIsPeanut() != null) {
@@ -83,17 +84,8 @@ public class UserService {
         user.setCity(dto.getCity());
         user.setState(dto.getState());
 
-        // Validate zipcode
-        String zipcode = dto.getZipcode();
-        Pattern pattern = Pattern.compile("\\b\\d{5}\\b");
-        Matcher matcher = pattern.matcher(zipcode);
-
-        Pattern pattern1 = Pattern.compile("\\b\\d{5}-\\d{4}\\b");
-        Matcher matcher1 = pattern1.matcher(zipcode);
-
-        if (matcher.matches() || matcher1.matches()) {
-            user.setZipcode(zipcode);
-        }
+        String zipcode = validateZipcode(dto.getZipcode());
+        user.setZipcode(zipcode);
 
         // If the value is null from the DTO, then set it to false
         boolean isPeanut = dto.getIsPeanut() != null && dto.getIsPeanut();
@@ -106,5 +98,20 @@ public class UserService {
         user.setIsDairy(isDairy);
 
         return user;
+    }
+
+    private String validateZipcode(String zipcode) {
+
+        Pattern pattern = Pattern.compile("\\b\\d{5}\\b");
+        Matcher matcher = pattern.matcher(zipcode);
+
+        Pattern pattern1 = Pattern.compile("\\b\\d{5}-\\d{4}\\b");
+        Matcher matcher1 = pattern1.matcher(zipcode);
+
+        if (matcher.matches() || matcher1.matches()) {
+            return zipcode;
+        }
+
+        return null;
     }
 }

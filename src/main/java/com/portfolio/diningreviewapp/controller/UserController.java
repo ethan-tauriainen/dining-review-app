@@ -21,14 +21,37 @@ public class UserController {
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
 
         try {
-            User createdUser = service.createUser(dto);
+            User createdUser = this.service.createUser(dto);
             UserDto response = convertToDto(createdUser);
             return ResponseEntity.created(URI.create("/api/user/" + response.getDisplayName())).body(response);
         } catch (ResponseStatusException e) {
-            UserDto errorDto = new UserDto();
-            errorDto.setMsg(e.getMessage());
-            return ResponseEntity.badRequest().body(errorDto);
+            return getErrorMessage(e.getMessage());
         }
+    }
+
+    @PutMapping("/{name}")
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto dto, @PathVariable("name") String displayName) {
+
+        try {
+            User updatedUser = this.service.updateUser(dto, displayName);
+            UserDto response = convertToDto(updatedUser);
+            return ResponseEntity.ok(response);
+        } catch (ResponseStatusException e) {
+            return getErrorMessage(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<UserDto> getUser(@PathVariable("name") String displayName) {
+
+        User userFromBackend = this.service.getUser(displayName);
+
+        if (userFromBackend == null) {
+            return getErrorMessage("User not found.");
+        }
+
+        UserDto response = convertToDto(userFromBackend);
+        return ResponseEntity.ok(response);
     }
 
     private UserDto convertToDto(User user) {
@@ -42,5 +65,12 @@ public class UserController {
         dto.setIsEgg(user.getIsEgg());
         dto.setIsDairy(user.getIsDairy());
         return dto;
+    }
+
+    private ResponseEntity<UserDto> getErrorMessage(String msg) {
+
+        UserDto errorDto = new UserDto();
+        errorDto.setMsg(msg);
+        return ResponseEntity.badRequest().body(errorDto);
     }
 }
