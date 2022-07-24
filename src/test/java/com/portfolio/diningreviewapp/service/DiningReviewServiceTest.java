@@ -7,16 +7,13 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 
+import com.portfolio.diningreviewapp.model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.portfolio.diningreviewapp.model.DiningReview;
-import com.portfolio.diningreviewapp.model.Restaurant;
-import com.portfolio.diningreviewapp.model.Status;
-import com.portfolio.diningreviewapp.model.User;
 import com.portfolio.diningreviewapp.repository.DiningReviewRepository;
 import com.portfolio.diningreviewapp.repository.RestaurantRepository;
 import com.portfolio.diningreviewapp.repository.UserRepository;
@@ -40,8 +37,15 @@ public class DiningReviewServiceTest {
     @Test
     void submitDiningReview_success() {
 
+        String displayName = "Ethan";
+        long restaurantId = 1L;
+        double peanutScore = 4.5D;
+        double eggScore = 5D;
+        double dairyScore = 2.3D;
+        String commentary = "Overall an excellent place to eat.";
+
         User user = new User();
-        user.setDisplayName("Ethan");
+        user.setDisplayName(displayName);
         user.setCity("Plymouth");
         user.setState("Michigan");
         user.setZipcode("48170");
@@ -49,17 +53,25 @@ public class DiningReviewServiceTest {
         user.setIsEgg(false);
         user.setIsDairy(true);
 
+        DiningReviewDto dto = new DiningReviewDto();
+        dto.setSubmittedBy(displayName);
+        dto.setRestaurantId(restaurantId);
+        dto.setPeanutScore(peanutScore);
+        dto.setEggScore(eggScore);
+        dto.setDairyScore(dairyScore);
+        dto.setCommentary(commentary);
+
         DiningReview diningReview = new DiningReview();
-        diningReview.setSubmittedBy("Ethan");
-        diningReview.setRestaurantId(1L);
-        diningReview.setPeanutScore(4.5D);
-        diningReview.setEggScore(5D);
-        diningReview.setDairyScore(2.3);
-        diningReview.setCommentary("Overall an excellent place to eat.");
+        diningReview.setSubmittedBy(displayName);
+        diningReview.setRestaurantId(restaurantId);
+        diningReview.setPeanutScore(peanutScore);
+        diningReview.setEggScore(eggScore);
+        diningReview.setDairyScore(dairyScore);
+        diningReview.setCommentary(commentary);
         
         Mockito.when(userRepository.findByDisplayName(user.getDisplayName())).thenReturn(Optional.of(user));
         Mockito.when(diningReviewRepository.save(diningReview)).thenReturn(diningReview);
-        DiningReview submittedReview = service.submitDiningReview(user.getDisplayName(), diningReview);
+        DiningReview submittedReview = service.submitDiningReview(user.getDisplayName(), dto);
 
         Assertions.assertNotNull(submittedReview);
         Assertions.assertEquals(submittedReview.getSubmittedBy(), diningReview.getSubmittedBy());
@@ -69,19 +81,32 @@ public class DiningReviewServiceTest {
     void submitDiningReview_noUser_failure() {
 
         String displayName = "Ethan";
+        long restaurantId = 1L;
+        double peanutScore = 4.5D;
+        double eggScore = 5D;
+        double dairyScore = 2.3D;
+        String commentary = "Overall an excellent place to eat.";
+
+        DiningReviewDto dto = new DiningReviewDto();
+        dto.setSubmittedBy(displayName);
+        dto.setRestaurantId(restaurantId);
+        dto.setPeanutScore(peanutScore);
+        dto.setEggScore(eggScore);
+        dto.setDairyScore(dairyScore);
+        dto.setCommentary(commentary);
 
         DiningReview diningReview = new DiningReview();
-        diningReview.setSubmittedBy("Ethan");
-        diningReview.setRestaurantId(1L);
-        diningReview.setPeanutScore(4.5D);
-        diningReview.setEggScore(5D);
-        diningReview.setDairyScore(2.3);
-        diningReview.setCommentary("Overall an excellent place to eat.");
+        diningReview.setSubmittedBy(displayName);
+        diningReview.setRestaurantId(restaurantId);
+        diningReview.setPeanutScore(peanutScore);
+        diningReview.setEggScore(eggScore);
+        diningReview.setDairyScore(dairyScore);
+        diningReview.setCommentary(commentary);
 
         Mockito.when(userRepository.findByDisplayName(displayName)).thenReturn(Optional.empty());
         Mockito.when(diningReviewRepository.save(diningReview)).thenReturn(diningReview);
 
-        Assertions.assertThrows(ResponseStatusException.class, () -> service.submitDiningReview(displayName, diningReview));
+        Assertions.assertThrows(ResponseStatusException.class, () -> service.submitDiningReview(displayName, dto));
     }
 
     @Test
