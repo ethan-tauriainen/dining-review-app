@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.portfolio.diningreviewapp.model.enums.Status;
 import lombok.Data;
 @Data
 @Entity

@@ -5,7 +5,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
-import com.portfolio.diningreviewapp.model.UserDto;
+import com.portfolio.diningreviewapp.model.dto.UserDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

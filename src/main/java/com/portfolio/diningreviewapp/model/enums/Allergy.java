@@ -1,4 +1,4 @@
-package com.portfolio.diningreviewapp.model;
+package com.portfolio.diningreviewapp.model.enums;
 
 public enum Allergy {
     PEANUT,

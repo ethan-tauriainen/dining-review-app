@@ -1,7 +1,7 @@
 package com.portfolio.diningreviewapp.controller;
 
 import com.portfolio.diningreviewapp.model.User;
-import com.portfolio.diningreviewapp.model.UserDto;
+import com.portfolio.diningreviewapp.model.dto.UserDto;
 import com.portfolio.diningreviewapp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

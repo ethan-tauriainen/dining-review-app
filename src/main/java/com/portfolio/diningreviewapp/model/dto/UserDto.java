@@ -1,4 +1,4 @@
-package com.portfolio.diningreviewapp.model;
+package com.portfolio.diningreviewapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
