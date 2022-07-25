@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.portfolio.diningreviewapp.model.User;
-import com.portfolio.diningreviewapp.model.UserDto;
+import com.portfolio.diningreviewapp.model.dto.UserDto;
 import com.portfolio.diningreviewapp.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

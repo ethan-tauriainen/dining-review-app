@@ -3,7 +3,7 @@ package com.portfolio.diningreviewapp.repository;
 import java.util.List;
 
 import com.portfolio.diningreviewapp.model.DiningReview;
-import com.portfolio.diningreviewapp.model.Status;
+import com.portfolio.diningreviewapp.model.enums.Status;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

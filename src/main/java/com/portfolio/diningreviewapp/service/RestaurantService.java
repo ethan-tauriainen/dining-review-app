@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.portfolio.diningreviewapp.model.Allergy;
+import com.portfolio.diningreviewapp.model.enums.Allergy;
 import com.portfolio.diningreviewapp.model.Restaurant;
 import com.portfolio.diningreviewapp.repository.RestaurantRepository;
 import org.springframework.http.HttpStatus;

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.portfolio.diningreviewapp.model.Allergy;
+import com.portfolio.diningreviewapp.model.enums.Allergy;
 import com.portfolio.diningreviewapp.model.Restaurant;
 import com.portfolio.diningreviewapp.repository.RestaurantRepository;
 

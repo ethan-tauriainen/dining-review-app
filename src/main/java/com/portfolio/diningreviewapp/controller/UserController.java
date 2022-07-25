@@ -1,7 +1,7 @@
 package com.portfolio.diningreviewapp.controller;
 
 import com.portfolio.diningreviewapp.model.User;
-import com.portfolio.diningreviewapp.model.UserDto;
+import com.portfolio.diningreviewapp.model.dto.UserDto;
 import com.portfolio.diningreviewapp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,19 @@ import java.net.URI;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto) {
 
         try {
-            User createdUser = this.service.createUser(dto);
+            User createdUser = this.userService.createUser(dto);
             UserDto response = convertToDto(createdUser);
             return ResponseEntity.created(URI.create("/api/user/" + response.getDisplayName())).body(response);
         } catch (ResponseStatusException e) {
-            return getErrorMessage(e.getMessage());
+            UserDto errorResponse = new UserDto();
+            errorResponse.setMsg(e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
@@ -33,21 +35,25 @@ public class UserController {
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto dto, @PathVariable("name") String displayName) {
 
         try {
-            User updatedUser = this.service.updateUser(dto, displayName);
+            User updatedUser = this.userService.updateUser(dto, displayName);
             UserDto response = convertToDto(updatedUser);
             return ResponseEntity.ok(response);
         } catch (ResponseStatusException e) {
-            return getErrorMessage(e.getMessage());
+            UserDto errorResponse = new UserDto();
+            errorResponse.setMsg(e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
     @GetMapping("/{name}")
     public ResponseEntity<UserDto> getUser(@PathVariable("name") String displayName) {
 
-        User userFromBackend = this.service.getUser(displayName);
+        User userFromBackend = this.userService.getUser(displayName);
 
         if (userFromBackend == null) {
-            return getErrorMessage("User not found.");
+            UserDto errorResponse = new UserDto();
+            errorResponse.setMsg("User not found.");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
 
         UserDto response = convertToDto(userFromBackend);
@@ -65,12 +71,5 @@ public class UserController {
         dto.setIsEgg(user.getIsEgg());
         dto.setIsDairy(user.getIsDairy());
         return dto;
-    }
-
-    private ResponseEntity<UserDto> getErrorMessage(String msg) {
-
-        UserDto errorDto = new UserDto();
-        errorDto.setMsg(msg);
-        return ResponseEntity.badRequest().body(errorDto);
     }
 }
