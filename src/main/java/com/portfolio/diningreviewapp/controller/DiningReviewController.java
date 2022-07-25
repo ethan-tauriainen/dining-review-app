@@ -65,6 +65,7 @@ public class DiningReviewController {
             DiningReview updatedDiningReview = this.diningReviewService.updateDiningReviewStatus(
                     id, Status.valueOf(statusDto.getStatus().toUpperCase())
             );
+
             DiningReviewDto response = convertToDto(updatedDiningReview);
             return ResponseEntity.ok(response);
         } catch (ResponseStatusException e) {

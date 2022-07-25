@@ -59,16 +59,47 @@ public class DiningReviewService {
         DiningReview diningReviewToUpdate = diningReviewOptional.get();
         diningReviewToUpdate.setStatus(status);
         diningReviewRepository.save(diningReviewToUpdate);
+        updateScores(diningReviewToUpdate.getRestaurantId());
         return diningReviewToUpdate;
     }
 
-    public List<DiningReview> getApprovedDiningReviews(Long restaurantId) {
-        Optional<Restaurant> restaurantOptional = restaurantRepository.findById(restaurantId);
+    public Restaurant updateScores(Long restaurantId) {
+
+        Optional<Restaurant> restaurantOptional = this.restaurantRepository.findById(restaurantId);
 
         if (restaurantOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Restaurant does not exist.");
         }
 
-        return diningReviewRepository.findAllByRestaurantIdAndStatus(restaurantId, Status.ACCEPTED);
+        double avgPeanutScore;
+        double avgEggScore;
+        double avgDairyScore;
+        double totalScore;
+
+        List<DiningReview> approvedDiningReviews = this.diningReviewRepository.findAllByRestaurantIdAndStatus(
+                restaurantId, Status.ACCEPTED
+        );
+
+        double sumPeanutScore = 0, sumEggScore = 0, sumDairyScore = 0;
+        for (DiningReview diningReview : approvedDiningReviews) {
+            sumPeanutScore += diningReview.getPeanutScore();
+            sumEggScore += diningReview.getEggScore();
+            sumDairyScore += diningReview.getDairyScore();
+        }
+
+        avgPeanutScore = Math.round((sumPeanutScore / approvedDiningReviews.size()) * 100) / 100D;
+        avgEggScore = Math.round((sumEggScore / approvedDiningReviews.size()) * 100) / 100D;
+        avgDairyScore = Math.round((sumDairyScore / approvedDiningReviews.size()) * 100) / 100D;
+
+        double sumAvgScores = avgPeanutScore + avgEggScore + avgDairyScore;
+        totalScore = Math.round((sumAvgScores / 3) * 100) / 100D;
+
+        Restaurant restaurantToUpdate = restaurantOptional.get();
+        restaurantToUpdate.setPeanutScore(avgPeanutScore);
+        restaurantToUpdate.setEggScore(avgEggScore);
+        restaurantToUpdate.setDairyScore(avgDairyScore);
+        restaurantToUpdate.setOverallScore(totalScore);
+        this.restaurantRepository.save(restaurantToUpdate);
+        return restaurantToUpdate;
     }
 }
