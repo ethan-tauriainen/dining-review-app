@@ -33,6 +33,7 @@ public class DiningReviewService {
         }
 
         // convert dto to DiningReview
+        //TODO enforce that scores are non-null
         DiningReview diningReview = new DiningReview();
         diningReview.setSubmittedBy(displayName);
         diningReview.setRestaurantId(dto.getRestaurantId());

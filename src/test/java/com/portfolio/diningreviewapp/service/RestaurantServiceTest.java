@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 
+import com.portfolio.diningreviewapp.model.dto.SubmitRestaurantRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,13 +31,20 @@ public class RestaurantServiceTest {
     @Test
     void submitRestaurant_success() {
 
+        String name = "Antonio's Italian Cucina";
+        String zipcode = "48170";
+
+        SubmitRestaurantRequest request = new SubmitRestaurantRequest();
+        request.setName(name);
+        request.setZipcode(zipcode);
+
         Restaurant restaurant = new Restaurant();
-        restaurant.setName("Antonio's Italien Cucina");
-        restaurant.setZipcode("48170");
+        restaurant.setName(name);
+        restaurant.setZipcode(zipcode);
 
         Mockito.when(repository.findByNameAndZipcode(restaurant.getZipcode(), restaurant.getName())).thenReturn(Optional.empty());
         Mockito.when(repository.save(restaurant)).thenReturn(restaurant);
-        Restaurant submittedRestaurant = service.submitRestaurant(restaurant);
+        Restaurant submittedRestaurant = service.submitRestaurant(request);
 
         Assertions.assertEquals(restaurant.getName(), submittedRestaurant.getName());
         Assertions.assertEquals(restaurant.getZipcode(), submittedRestaurant.getZipcode());
@@ -45,13 +53,20 @@ public class RestaurantServiceTest {
     @Test
     void submitRestaurant_alreadyExists_failure() {
 
+        String name = "Antonio's Italian Cucina";
+        String zipcode = "48170";
+
+        SubmitRestaurantRequest request = new SubmitRestaurantRequest();
+        request.setName(name);
+        request.setZipcode(zipcode);
+
         Restaurant restaurant = new Restaurant();
-        restaurant.setName("Antonio's Italien Cucina");
-        restaurant.setZipcode("48170");
+        restaurant.setName(name);
+        restaurant.setZipcode(zipcode);
 
         Mockito.when(repository.findByNameAndZipcode(restaurant.getZipcode(), restaurant.getName())).thenReturn(Optional.of(restaurant));
         
-        Assertions.assertThrows(ResponseStatusException.class, () -> service.submitRestaurant(restaurant));
+        Assertions.assertThrows(ResponseStatusException.class, () -> service.submitRestaurant(request));
     }
 
     @Test

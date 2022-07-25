@@ -1,12 +1,11 @@
 package com.portfolio.diningreviewapp.service;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.portfolio.diningreviewapp.model.User;
 import com.portfolio.diningreviewapp.model.dto.UserDto;
 import com.portfolio.diningreviewapp.repository.UserRepository;
+import com.portfolio.diningreviewapp.service.utils.ServiceUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -51,7 +50,7 @@ public class UserService {
         }
 
         if (userDto.getZipcode() != null && !userDto.getZipcode().isEmpty()) {
-            String zipcode = validateZipcode(userDto.getZipcode());
+            String zipcode = ServiceUtil.validateZipcode(userDto.getZipcode());
             userToUpdate.setZipcode(zipcode);
         }
 
@@ -84,7 +83,7 @@ public class UserService {
         user.setCity(dto.getCity());
         user.setState(dto.getState());
 
-        String zipcode = validateZipcode(dto.getZipcode());
+        String zipcode = ServiceUtil.validateZipcode(dto.getZipcode());
         user.setZipcode(zipcode);
 
         // If the value is null from the DTO, then set it to false
@@ -98,20 +97,5 @@ public class UserService {
         user.setIsDairy(isDairy);
 
         return user;
-    }
-
-    private String validateZipcode(String zipcode) {
-
-        Pattern pattern = Pattern.compile("\\b\\d{5}\\b");
-        Matcher matcher = pattern.matcher(zipcode);
-
-        Pattern pattern1 = Pattern.compile("\\b\\d{5}-\\d{4}\\b");
-        Matcher matcher1 = pattern1.matcher(zipcode);
-
-        if (matcher.matches() || matcher1.matches()) {
-            return zipcode;
-        }
-
-        return null;
     }
 }
